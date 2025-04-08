@@ -1,0 +1,550 @@
+{
+  "Version": 1,
+  "Hash": "0nVF/wHoIpbo3MZL0wE8W0hH6zSPl3zzcxPcOcDPSts=",
+  "Source": "FnbAdminPortal",
+  "BasePath": "_content/FnbAdminPortal",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "FnbAdminPortal\\wwwroot",
+      "Source": "FnbAdminPortal",
+      "ContentRoot": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\",
+      "BasePath": "_content/FnbAdminPortal",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.css",
+      "SourceId": "MudBlazor",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\",
+      "BasePath": "_content/MudBlazor",
+      "RelativePath": "MudBlazor.min.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "oipdj7szyj",
+      "Integrity": "kE7+gDHEC76Ui96jIj+UgfUzHZSsiiOwOiLgYaaQtFQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.css"
+    },
+    {
+      "Identity": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.js",
+      "SourceId": "MudBlazor",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\",
+      "BasePath": "_content/MudBlazor",
+      "RelativePath": "MudBlazor.min.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b33kij1mez",
+      "Integrity": "WaXXtRLDwB7hbwU/5l/D5A0fEFxnfOfr8N7qvtGeb0E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.js"
+    },
+    {
+      "Identity": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FnbAdminPortal.styles.css",
+      "SourceId": "FnbAdminPortal",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\bundle\\",
+      "BasePath": "_content/FnbAdminPortal",
+      "RelativePath": "FnbAdminPortal#[.{fingerprint}]?.styles.css",
+      "AssetKind": "All",
+      "AssetMode": "CurrentProject",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ApplicationBundle",
+      "Fingerprint": "j29gp7uahu",
+      "Integrity": "6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FnbAdminPortal.styles.css"
+    },
+    {
+      "Identity": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FnbAdminPortal.bundle.scp.css",
+      "SourceId": "FnbAdminPortal",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\",
+      "BasePath": "_content/FnbAdminPortal",
+      "RelativePath": "FnbAdminPortal#[.{fingerprint}]!.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "Fingerprint": "j29gp7uahu",
+      "Integrity": "6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FnbAdminPortal.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\css\\site.css",
+      "SourceId": "FnbAdminPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\",
+      "BasePath": "_content/FnbAdminPortal",
+      "RelativePath": "css/site#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "jjq70ljid1",
+      "Integrity": "4Vl7bLpYsXbj2NX+D+UvOLXd8/1wSShg5ZwNPi+OcP4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\favicon.ico",
+      "SourceId": "FnbAdminPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\",
+      "BasePath": "_content/FnbAdminPortal",
+      "RelativePath": "favicon#[.{fingerprint}]?.ico",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "61n19gt1b8",
+      "Integrity": "Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\favicon.ico"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "_content/MudBlazor/MudBlazor.min.css",
+      "AssetFile": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "358182"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kE7+gDHEC76Ui96jIj+UgfUzHZSsiiOwOiLgYaaQtFQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 28 Jun 2021 12:29:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-kE7+gDHEC76Ui96jIj+UgfUzHZSsiiOwOiLgYaaQtFQ="
+        }
+      ]
+    },
+    {
+      "Route": "_content/MudBlazor/MudBlazor.min.js",
+      "AssetFile": "C:\\Users\\Asus\\.nuget\\packages\\mudblazor\\5.0.15\\staticwebassets\\MudBlazor.min.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10843"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"WaXXtRLDwB7hbwU/5l/D5A0fEFxnfOfr8N7qvtGeb0E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 28 Jun 2021 12:29:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-WaXXtRLDwB7hbwU/5l/D5A0fEFxnfOfr8N7qvtGeb0E="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2622"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4Vl7bLpYsXbj2NX+D+UvOLXd8/1wSShg5ZwNPi+OcP4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 01:05:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-4Vl7bLpYsXbj2NX+D+UvOLXd8/1wSShg5ZwNPi+OcP4="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.jjq70ljid1.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2622"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4Vl7bLpYsXbj2NX+D+UvOLXd8/1wSShg5ZwNPi+OcP4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 01:05:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "jjq70ljid1"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-4Vl7bLpYsXbj2NX+D+UvOLXd8/1wSShg5ZwNPi+OcP4="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.61n19gt1b8.ico",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\favicon.ico",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5430"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/x-icon"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 01:05:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "61n19gt1b8"
+        },
+        {
+          "Name": "label",
+          "Value": "favicon.ico"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.ico",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\wwwroot\\favicon.ico",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5430"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/x-icon"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 01:05:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="
+        }
+      ]
+    },
+    {
+      "Route": "FnbAdminPortal.bundle.scp.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FnbAdminPortal.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "129"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 02:01:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY="
+        }
+      ]
+    },
+    {
+      "Route": "FnbAdminPortal.j29gp7uahu.bundle.scp.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\FnbAdminPortal.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "129"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 02:01:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "j29gp7uahu"
+        },
+        {
+          "Name": "label",
+          "Value": "FnbAdminPortal.bundle.scp.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY="
+        }
+      ]
+    },
+    {
+      "Route": "FnbAdminPortal.j29gp7uahu.styles.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FnbAdminPortal.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "129"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 02:01:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "j29gp7uahu"
+        },
+        {
+          "Name": "label",
+          "Value": "FnbAdminPortal.styles.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY="
+        }
+      ]
+    },
+    {
+      "Route": "FnbAdminPortal.styles.css",
+      "AssetFile": "C:\\Users\\Asus\\FnbReservationSystemMaster\\FnbAdminPortal\\obj\\Debug\\net6.0\\scopedcss\\bundle\\FnbAdminPortal.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "129"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 08 Apr 2025 02:01:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-6yZihpfhUGcjInYl0wSa4P5pxmy9AyRSMgZbmDUHIDY="
+        }
+      ]
+    }
+  ]
+}

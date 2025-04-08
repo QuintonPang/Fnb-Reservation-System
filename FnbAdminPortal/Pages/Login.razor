@@ -1,0 +1,60 @@
+
+@page "/login"
+@inject HttpClient Http
+@inject AuthenticationStateProvider   AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+
+<MudPaper Class="pa-4" Elevation="4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Login</MudText>
+    
+    <MudTextField Label="Username" @bind-Value="username" />
+    <MudTextField Label="Password" @bind-Value="password" InputType="InputType.Password" />
+    
+    <MudButton OnClick="OnLoginClicked">Login</MudButton>
+    
+    @if (loginFailed)
+    {
+        <MudAlert Severity="Severity.Error">Invalid credentials. Please try again.</MudAlert>
+    }
+</MudPaper>
+
+@code {
+    private string username;
+    private string password;
+    private bool loginFailed = false;
+
+    async private void OnLoginClicked()
+    {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            loginFailed = true;
+            return;
+        }
+
+        // Mock check for admin and staff login
+        if (username == "admin" && password == "admin123")
+      {
+         var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlNoYWhyaXlhciIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTUxNjIzOTAyMn0.l9E7Oypb-ozndpFUkeVhOYzhtjGEuFmdYdAxhbpXAFY";
+      await LocalStorage.SetItemAsync("token", token); 
+      //  await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        
+
+     // await AuthStateProvider.GetAuthenticationStateAsync();
+           ((CustomAuthStateProvider)   AuthStateProvider).NotifyUserAuthentication("Admin");
+            Navigation.NavigateTo("/admin-dashboard");
+        }
+        else if (username == "staff" && password == "staff123")
+        {
+  //     await AuthStateProvider.GetAuthenticationStateAsync();
+           ((CustomAuthStateProvider)   AuthStateProvider).NotifyUserAuthentication("Staff");
+
+            Navigation.NavigateTo("/staff-dashboard");
+        }
+        else
+        {
+            loginFailed = true;
+        }
+    }
+}
+<!-- Compare this snippet from FnbAdminPortal/CustomAuthenticationStateProvider.cs: -->

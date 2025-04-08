@@ -1,0 +1,98 @@
+@page "/queue-management"
+@inject HttpClient Http
+@inject AuthenticationStateProvider   AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
+
+<MudContainer>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Queue Management</MudText>
+                </MudCardContent>
+
+                <MudCardContent>
+                    <MudTable Items="queues" Hover="true" Bordered="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh>Queue ID</MudTh>
+                            <MudTh>Is Seated</MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Queue ID">@context.Id</MudTd>
+                            <MudTd DataLabel="Is Seated">@context.IsSeated</MudTd>
+                            <MudTd DataLabel="Actions">
+                                <MudButton Color="Color.Primary" @onclick="() => DequeueAsync(context.Id)" Disabled="@context.IsSeated">
+                                    Seat
+                                </MudButton>
+                                <MudButton Color="Color.Error" @onclick="() => RemoveQueueAsync(context.Id)">
+                                    Remove
+                                </MudButton>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private List<Queue> queues = new List<Queue>();
+
+ protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        var response = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+        if (response != null)
+        {
+            queues = response;
+        }
+        else
+        {
+            // Handle error (you can display an error message or log it)
+            queues = new List<Queue>();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log or handle the exception appropriately
+        queues = new List<Queue>();
+    }
+}
+
+
+    private async Task DequeueAsync(int id)
+    {
+        // Call the API to mark the queue as seated (dequeue)
+        var response = await Http.PutAsync($"http://localhost:5274/api/Queue/{id}/dequeue", null);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Refresh the list of queues
+            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+        }
+    }
+
+    private async Task RemoveQueueAsync(int id)
+    {
+        // Call the API to remove the queue entry
+        var response = await Http.DeleteAsync($"http://localhost:5274/api/Queue/{id}");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Refresh the list of queues
+            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+        }
+    }
+
+    // Queue model to match the API response
+    public class Queue
+    {
+        public int Id { get; set; }
+        public bool IsSeated { get; set; }
+    }
+}

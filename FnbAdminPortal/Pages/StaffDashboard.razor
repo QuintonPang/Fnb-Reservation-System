@@ -1,0 +1,7 @@
+@page "/staff-dashboard"
+@inject AuthenticationStateProvider AuthProvider
+@attribute [Authorize(Roles = "Staff")]
+
+<h3>Staff Dashboard</h3>
+<p>Welcome, Staff!</p>
+<QueueManagement />
