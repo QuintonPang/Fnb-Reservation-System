@@ -1,0 +1,49 @@
+@inject IDialogService DialogService
+@inject HttpClient Http
+@using FnbAdminPortal.Models
+
+<MudPaper Class="pa-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddDialog">Add Outlet</MudButton>
+
+    <MudTable Items="_outlets" Striped>
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Location</MudTh>
+            <MudTh>Capacity</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.Id</MudTd>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Location</MudTd>
+            <MudTd>@context.Capacity</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<Outlet> _outlets = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+    }
+
+    async Task OpenAddDialog()
+    {
+        var dialog = DialogService.Show<AddOutletDialog>("Add Outlet");
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var newOutlet = (Outlet)result.Data;
+            var response = await Http.PostAsJsonAsync("http://localhost:5274/api/Outlet", newOutlet);
+            if (response.IsSuccessStatusCode)
+            {
+                _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+            }
+        }
+    }
+
+  
+}

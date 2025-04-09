@@ -1,0 +1,81 @@
+@page "/staff"
+@inject HttpClient Http
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5">Staff Management</MudText>
+
+    <MudTable Items="_staffList" Hover="true">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Role</MudTh>
+            <MudTh>Outlet</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Role</MudTd>
+            <MudTd>@GetOutletName(context.OutletId)</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudDivider Class="my-4" />
+
+    <MudText Typo="Typo.h6">Add New Staff</MudText>
+    <MudTextField @bind-Value="_newStaff.Name" Label="Name" Variant="Variant.Outlined" />
+    <!-- <MudSelect @bind-Value="_newStaff.Role" Label="Role">
+        <MudSelectItem Value="Admin">Admin</MudSelectItem>
+        <MudSelectItem Value="Staff">Staff</MudSelectItem>
+    </MudSelect> -->
+    <MudSelect @bind-Value="_newStaff.OutletId" Label="Outlet">
+        @foreach (var outlet in _outlets)
+        {
+            <MudSelectItem Value="@outlet.Id">@outlet.Name</MudSelectItem>
+        }
+    </MudSelect>
+    <MudButton OnClick="AddStaff" Color="Color.Primary" Variant="Variant.Filled">Add</MudButton>
+</MudPaper>
+
+@code {
+    private List<Staff> _staffList = new();
+    private List<Outlet> _outlets = new();
+    private Staff _newStaff = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _staffList = await Http.GetFromJsonAsync<List<Staff>>("http://localhost:5274/api/Staff");
+        _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+    }
+
+    private async Task AddStaff()
+    {
+         _newStaff.Role = "Staff"; // ✅ Force role to "Staff"
+
+        await Http.PostAsJsonAsync("http://localhost:5274/api/Staff", _newStaff);
+        _staffList = await Http.GetFromJsonAsync<List<Staff>>("http://localhost:5274/api/Staff");
+        _newStaff = new();
+    }
+
+    private string GetOutletName(int id)
+    {
+        return _outlets.FirstOrDefault(o => o.Id == id)?.Name ?? "Unknown";
+    }
+
+    
+    
+public class Staff
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Role { get; set; } // Admin, Staff
+    public int OutletId { get; set; }
+}
+
+public class Outlet
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Location { get; set; }
+    public int Capacity { get; set; }
+   
+}
+
+}

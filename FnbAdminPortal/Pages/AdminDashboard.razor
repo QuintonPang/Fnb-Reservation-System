@@ -1,7 +1,9 @@
 @page "/admin-dashboard"
 @using Microsoft.AspNetCore.Components.Authorization
-@attribute [Authorize(Roles = "Admin")]
- 
+   
 <h3>Admin Dashboard</h3>
 <p>Welcome, Admin!</p>
-<QueueManagement />
+<BannedCustomerManagement />
+<OutletManagement />
+<StaffManagement />
+

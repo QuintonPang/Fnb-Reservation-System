@@ -1,0 +1,76 @@
+@page "/banned-customers"
+@inject HttpClient Http
+@inject IDialogService DialogService
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h4" Class="mb-2">Banned Customers</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OpenAddDialog">Ban New Customer</MudButton>
+
+    <MudTable Items="bannedCustomers" Hover="true" Striped="true" Bordered="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>Customer Name</MudTh>
+            <MudTh>Contact Number</MudTh>
+            <MudTh>Ban Date</MudTh>
+            <MudTh>Reason</MudTh>
+                        <MudTh>Actions</MudTh>
+
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.CustomerName</MudTd>
+            <MudTd>@context.ContactNumber</MudTd>
+            <MudTd>@context.BanDate.ToShortDateString()</MudTd>
+            <MudTd>@context.Reason</MudTd>
+            <MudTd>
+                <MudButton Color="Color.Error" OnClick="@(() => RemoveBannedCustomer(context.Id))" Variant="Variant.Text">Remove</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<BannedCustomer> bannedCustomers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        bannedCustomers = await Http.GetFromJsonAsync<List<BannedCustomer>>("http://localhost:5274/api/BannedCustomer");
+    }
+
+    private async Task OpenAddDialog()
+    {
+        var dialog = DialogService.Show<AddBannedCustomerDialog>("Ban Customer");
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await LoadData();
+        }
+    }
+
+    public class BannedCustomer
+    {
+        public int Id { get; set; }
+        public string CustomerName { get; set; }
+        public string ContactNumber { get; set; }
+        public DateTime BanDate { get; set; }
+        public string Reason { get; set; }
+    }
+
+      private async Task RemoveBannedCustomer(int id)
+    {
+        var confirm = await DialogService.ShowMessageBox(
+            "Confirm",
+            "Are you sure you want to unban this customer?",
+            yesText: "Yes", cancelText: "Cancel");
+
+        if (confirm == true)
+        {
+            await Http.DeleteAsync($"http://localhost:5274/api/BannedCustomer/{id}");
+            await LoadData(); // Refresh after delete
+        }
+    }
+}

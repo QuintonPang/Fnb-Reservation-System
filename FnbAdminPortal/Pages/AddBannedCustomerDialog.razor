@@ -1,0 +1,56 @@
+
+@inject HttpClient Http
+
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Ban a New Customer</MudText>
+
+        <MudTextField @bind-Value="newCustomer.CustomerName" Label="Customer Name" Required="true" />
+        <MudTextField @bind-Value="newCustomer.ContactNumber" Label="Contact Number" Required="true" />
+        <MudTextField @bind-Value="newCustomer.Reason" Label="Reason" Required="true" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="BanCustomer" Color="Color.Error" Variant="Variant.Filled">Ban</MudButton>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } // ✅ Correct
+
+    private BannedCustomer newCustomer = new()
+    {
+        BanDate = DateTime.Now
+    };
+
+ private async Task BanCustomer()
+{
+    var response = await Http.PostAsJsonAsync("http://localhost:5274/api/BannedCustomer", newCustomer);
+    if (response.IsSuccessStatusCode)
+    {
+            MudDialog.Close(DialogResult.Ok(true));
+    }
+    else
+    {
+            MudDialog.Cancel();
+    }
+}
+
+
+private void Cancel()
+{
+            MudDialog.Cancel();
+}
+
+    public class BannedCustomer
+    {
+        public int Id { get; set; }
+        public string CustomerName { get; set; }
+        public string ContactNumber { get; set; }
+        public DateTime BanDate { get; set; }
+        public string Reason { get; set; }
+    }
+}

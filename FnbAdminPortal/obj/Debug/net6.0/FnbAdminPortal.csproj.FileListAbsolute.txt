@@ -47,3 +47,4 @@ C:\Users\Asus\FnbReservationSystemMaster\FnbAdminPortal\bin\Debug\net6.0\Microso
 C:\Users\Asus\FnbReservationSystemMaster\FnbAdminPortal\bin\Debug\net6.0\Microsoft.AspNetCore.Metadata.dll
 C:\Users\Asus\FnbReservationSystemMaster\FnbAdminPortal\obj\Debug\net6.0\FnbAdminPortal.RazorAssemblyInfo.cache
 C:\Users\Asus\FnbReservationSystemMaster\FnbAdminPortal\obj\Debug\net6.0\FnbAdminPortal.RazorAssemblyInfo.cs
+C:\Users\Asus\FnbReservationSystemMaster\FnbAdminPortal\obj\Debug\net6.0\FnbAdminPortal.sourcelink.json

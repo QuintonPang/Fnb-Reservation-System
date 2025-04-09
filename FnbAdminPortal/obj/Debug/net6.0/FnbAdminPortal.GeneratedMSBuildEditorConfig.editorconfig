@@ -24,8 +24,20 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/AddBannedCustomerDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkQmFubmVkQ3VzdG9tZXJEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/AddOutletDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkT3V0bGV0RGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/AdminDashboard.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5EYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/BannedCustomerManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQmFubmVkQ3VzdG9tZXJNYW5hZ2VtZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/Index.razor]
@@ -36,6 +48,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/OutletManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3V0bGV0TWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/QueueManagement.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUXVldWVNYW5hZ2VtZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -44,8 +60,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVkaXJlY3RUb0xvZ2luLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/ReservationManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVzZXJ2YXRpb25NYW5hZ2VtZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/StaffDashboard.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhZmZEYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Pages/StaffManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhZmZNYW5hZ2VtZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Asus/FnbReservationSystemMaster/FnbAdminPortal/Shared/SurveyPrompt.razor]

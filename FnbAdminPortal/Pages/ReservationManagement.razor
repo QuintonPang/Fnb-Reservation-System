@@ -1,0 +1,80 @@
+@page "/reservation-management"
+@inject HttpClient Http
+
+<h3>Reservation Management</h3>
+
+@if (reservations == null)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+else if (!reservations.Any())
+{
+    <MudAlert Severity="Severity.Info">No reservations found.</MudAlert>
+}
+else
+{
+    <MudTable Items="reservations" Hover="true" Dense="true">
+        <HeaderContent>
+            <MudTh>Customer</MudTh>
+            <MudTh>Contact</MudTh>
+            <MudTh>Date & Time</MudTh>
+            <MudTh>Guests</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.CustomerName</MudTd>
+            <MudTd>@context.ContactNumber</MudTd>
+            <MudTd>@context.ReservationDateTime.ToString("g")</MudTd>
+            <MudTd>@context.NumberOfGuests</MudTd>
+            <MudTd>@context.Status</MudTd>
+            <MudTd>
+                <MudButton Disabled="@((context.Status == "Confirmed"))" Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => UpdateStatus(context.Id, "Confirmed"))">
+                    Confirm
+                </MudButton>
+                <MudButton Disabled="@((context.Status == "Cancelled"))" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "Cancelled"))" Class="ml-2">
+                    Cancel
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    private List<Reservation> reservations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching reservations: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateStatus(int id, string status)
+    {
+        var updateRequest = new { Status = status };
+        var response = await Http.PutAsJsonAsync($"http://localhost:5274/api/Reservation/{id}/status", updateRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            var reservation = reservations.FirstOrDefault(r => r.Id == id);
+            if (reservation != null)
+                reservation.Status = status;
+        }
+    }
+
+    public class Reservation
+    {
+        public int Id { get; set; }
+        public string CustomerName { get; set; }
+        public string ContactNumber { get; set; }
+        public DateTime ReservationDateTime { get; set; }
+        public int NumberOfGuests { get; set; }
+        public string Status { get; set; }
+        public int OutletId { get; set; }
+    }
+}

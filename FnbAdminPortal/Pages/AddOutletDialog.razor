@@ -1,0 +1,47 @@
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@using FnbAdminPortal.Models
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Add New Outlet</MudText>
+        <MudTextField @bind-Value="outlet.Name" Label="Name" Required />
+        <MudTextField @bind-Value="outlet.Location" Label="Location" Required />
+        <MudNumericField @bind-Value="outlet.Capacity" Label="Capacity" Required />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="AddOutletAsync">Add</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    Outlet outlet = new();
+
+    async Task AddOutletAsync()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("http://localhost:5274/api/Outlet", outlet);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Outlet added successfully!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(outlet));
+            }
+            else
+            {
+                Snackbar.Add("Failed to add outlet.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+   
+}

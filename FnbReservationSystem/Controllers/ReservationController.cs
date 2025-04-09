@@ -76,5 +76,18 @@ namespace FnbReservationSystem.Controllers
         {
             return _context.Reservations.Any(e => e.Id == id);
         }
+
+        [HttpPut("{id}/status")]
+public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] Reservation update)
+{
+    var reservation = await _context.Reservations.FindAsync(id);
+    if (reservation == null) return NotFound();
+
+    reservation.Status = update.Status;
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+
     }
 }

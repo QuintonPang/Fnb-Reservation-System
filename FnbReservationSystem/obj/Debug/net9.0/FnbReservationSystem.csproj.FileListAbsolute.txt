@@ -574,3 +574,4 @@ C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\s
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\FnbReser.4E28224F.Up2Date
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\FnbReservationSystem.genruntimeconfig.cache
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\ref\FnbReservationSystem.dll
+C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\FnbReservationSystem.sourcelink.json
