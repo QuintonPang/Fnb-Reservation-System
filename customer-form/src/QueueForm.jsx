@@ -16,31 +16,31 @@ const QueueForm = () => {
   
   
   
-  // WebSocket setup
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:5274"); // Your WebSocket server
-    setWebSocket(socket);
+  // // WebSocket setup
+  // useEffect(() => {
+  //   const socket = new WebSocket("ws://localhost:5274"); // Your WebSocket server
+  //   setWebSocket(socket);
 
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-    };
+  //   socket.onopen = () => {
+  //     console.log("WebSocket connected");
+  //   };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket Error: ", error);
-      toast({
-        title: "Connection Error",
-        description: "Could not connect to WebSocket.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    };
+  //   socket.onerror = (error) => {
+  //     console.error("WebSocket Error: ", error);
+  //     toast({
+  //       title: "Connection Error",
+  //       description: "Could not connect to WebSocket.",
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   };
 
-    // Clean up WebSocket connection when the component unmounts
-    return () => {
-      socket.close();
-    };
-  }, [toast]);
+  //   // Clean up WebSocket connection when the component unmounts
+  //   return () => {
+  //     socket.close();
+  //   };
+  // }, [toast]);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,7 +50,7 @@ const QueueForm = () => {
       numberOfGuests,
       specialRequests,
       isSeated,
-      outletId
+      outletId,
     };
 
     // Simulate submitting the form (You can replace this with an API call)
@@ -67,6 +67,10 @@ const QueueForm = () => {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        const id = data.id; // 🎯 Here's your new queue ID
+    
+    
         toast({
           title: 'Queue Added',
           description: 'Your queue request has been successfully submitted!',
@@ -83,8 +87,12 @@ const QueueForm = () => {
         setIsSeated(false);
         setOutletId('');
 
-        // Redirect to QueueStatus page
-        navigate('/queue-status');
+        setTimeout(()=>{
+          
+ // Redirect to QueueStatus page
+ navigate(`/queue-status?id=${id}`);
+        },1000)
+       
       } else {
         throw new Error('Failed to add queue');
       }
@@ -100,7 +108,27 @@ const QueueForm = () => {
     }
 
   };
+ const [outlets, setOutlets] = useState([]);
 
+  useEffect(() => {
+    const fetchOutlets = async () => {
+      try {
+        const response = await fetch("http://localhost:5274/api/Outlet");
+        const data = await response.json();
+        setOutlets(data);
+      } catch (error) {
+        toast({
+          title: "Error fetching outlets.",
+          description: error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
+
+    fetchOutlets();
+  }, []);
   return (
     <ChakraProvider>
       <Box maxW="md" mx="auto" mt="8" p="5" borderWidth="1px" borderRadius="lg">
@@ -142,29 +170,26 @@ const QueueForm = () => {
               />
             </FormControl>
 
-            <FormControl id="isSeated">
+            {/* <FormControl id="isSeated">
               <Checkbox
                 isChecked={isSeated}
                 onChange={(e) => setIsSeated(e.target.checked)}
               >
                 Is Seated?
               </Checkbox>
-            </FormControl>
+            </FormControl> */}
 
-            <FormControl id="outletId" isRequired>
-              <FormLabel>Outlet</FormLabel>
-              <Select
-                value={outletId}
-                onChange={(e) => setOutletId(e.target.value)}
-              >
-                <option value="">Select Outlet</option>
-                <option value="1">Outlet 1</option>
-                <option value="2">Outlet 2</option>
-                <option value="3">Outlet 3</option>
-                {/* Add more outlet options here */}
-              </Select>
-            </FormControl>
-
+               <FormControl isRequired>
+                     <FormLabel>Outlet</FormLabel>
+                     <Select name="outletId" value={outletId} onChange={(e)=>setOutletId(e.target.value)}>
+                       <option value="">Select Outlet</option>
+                       {outlets.map((outlet) => (
+                         <option key={outlet.id} value={outlet.id}>
+                           {outlet.name} - {outlet.location}
+                         </option>
+                       ))}
+                     </Select>
+                   </FormControl>
             <Button
               type="submit"
               colorScheme="teal"

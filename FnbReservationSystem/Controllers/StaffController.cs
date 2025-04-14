@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FnbReservationSystem.Models;
 using FnbReservationSystem.Data;  // Add this line if missing
+    using System.Security.Cryptography;
+using System.Text;
+using System; // Needed for StringBuilder
 
 namespace FnbReservationSystem.Controllers
 {
@@ -37,15 +40,32 @@ namespace FnbReservationSystem.Controllers
             return staff;
         }
 
-        // POST: api/Staff
-        [HttpPost]
-        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
-        {
-            _context.Staffs.Add(staff);
-            await _context.SaveChangesAsync();
+   
 
-            return CreatedAtAction(nameof(GetStaff), new { id = staff.Id }, staff);
-        }
+[HttpPost]
+public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+{
+    // Get last 4 digits of IC No
+            Console.WriteLine("HELOOOOOO"); // For debugging purposes
+
+    if (!string.IsNullOrEmpty(staff.IcNo) && staff.IcNo.Length >= 12) 
+    {
+        string lastFourDigits = staff.IcNo.Substring(staff.IcNo.Length - 4);
+        staff.Password = HashPassword(lastFourDigits); // Hashing the password
+    }
+    else
+    {
+        return BadRequest(new { message = "Invalid IC number" });
+    }
+
+    staff.Username = staff.Username.Split(' ')[0].ToLower(); // Ensure username is in lowercase
+
+    _context.Staffs.Add(staff);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetStaff), new { id = staff.Id }, staff);
+}
+
 
         // PUT: api/Staff/5
         [HttpPut("{id}")]
@@ -97,5 +117,23 @@ namespace FnbReservationSystem.Controllers
         {
             return _context.Staffs.Any(e => e.Id == id);
         }
+
+        private string HashPassword(string input)
+{
+    using (SHA256 sha256 = SHA256.Create())
+    {
+        byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+        StringBuilder builder = new StringBuilder();
+        foreach (byte b in bytes)
+        {
+            builder.Append(b.ToString("x2")); // convert to hex
+        }
+        return builder.ToString();
     }
+    
+}
+    }
+
+    
+
 }

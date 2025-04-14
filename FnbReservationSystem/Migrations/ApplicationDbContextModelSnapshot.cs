@@ -50,7 +50,7 @@ namespace FnbReservationSystem.Migrations
                     b.ToTable("BannedCustomers");
                 });
 
-            modelBuilder.Entity("Outlet", b =>
+            modelBuilder.Entity("FnbReservationSystem.Models.Outlet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,6 +89,9 @@ namespace FnbReservationSystem.Migrations
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsSeated")
                         .HasColumnType("tinyint(1)");
@@ -150,6 +153,10 @@ namespace FnbReservationSystem.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("IcNo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -157,7 +164,15 @@ namespace FnbReservationSystem.Migrations
                     b.Property<int>("OutletId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("longtext");
 

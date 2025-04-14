@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 public class WebSocketManager
 {
@@ -21,11 +22,17 @@ public class WebSocketManager
     }
 
     // Handle incoming WebSocket connections and broadcast messages
-    public async Task HandleWebSocketAsync(WebSocket webSocket)
+    public async Task HandleWebSocketAsync(WebSocket webSocket, List<Queue>queues)
     {
         AddSocket(webSocket); // Store the socket connection
 
-        var buffer = new byte[1024 * 4];
+  var buffer = new byte[1024*4];
+         
+            // Send the current queue data when the connection is established
+            var currentQueueData = JsonSerializer.Serialize(queues);
+            var initialBuffer = Encoding.UTF8.GetBytes(currentQueueData);
+            await webSocket.SendAsync(new ArraySegment<byte>(initialBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+
         while (webSocket.State == WebSocketState.Open)
         {
             var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
@@ -56,6 +63,26 @@ public class WebSocketManager
             if (socket.State == WebSocketState.Open)
             {
                 await socket.SendAsync(new ArraySegment<byte>(byteMessage), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+        }
+    }
+
+     public static async Task BroadcastQueueUpdate(List<Queue> queue)
+    {
+        var message = JsonSerializer.Serialize(queue);
+        var buffer = Encoding.UTF8.GetBytes(message);
+
+        Console.WriteLine("RANN");
+
+        foreach (var client in _sockets)
+        {
+                                    Console.WriteLine("RANN2222");
+
+            if (client.State == WebSocketState.Open)
+            {
+                        Console.WriteLine("RANN333");
+
+                await client.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
     }

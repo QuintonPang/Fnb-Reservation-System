@@ -20,11 +20,9 @@
     <MudDivider Class="my-4" />
 
     <MudText Typo="Typo.h6">Add New Staff</MudText>
-    <MudTextField @bind-Value="_newStaff.Name" Label="Name" Variant="Variant.Outlined" />
-    <!-- <MudSelect @bind-Value="_newStaff.Role" Label="Role">
-        <MudSelectItem Value="Admin">Admin</MudSelectItem>
-        <MudSelectItem Value="Staff">Staff</MudSelectItem>
-    </MudSelect> -->
+    <MudTextField @bind-Value="_newStaff.Name" Label="Full Name" Variant="Variant.Outlined" />
+
+    <MudTextField @bind-Value="_newStaff.IcNo" Label="IC Number" Variant="Variant.Outlined" />
     <MudSelect @bind-Value="_newStaff.OutletId" Label="Outlet">
         @foreach (var outlet in _outlets)
         {
@@ -47,11 +45,32 @@
 
     private async Task AddStaff()
     {
-         _newStaff.Role = "Staff"; // ✅ Force role to "Staff"
+        _newStaff.Role = "Staff"; // Force role to "Staff"
+        _newStaff.Password = "defaultPassword"; // Set a default password
+                _newStaff.Username = "username"; // Set a default password
 
-        await Http.PostAsJsonAsync("http://localhost:5274/api/Staff", _newStaff);
+        // Ensure that the IC No is properly captured
+        if (string.IsNullOrWhiteSpace(_newStaff.IcNo))
+        {
+            // Show some error or notification
+            return;
+        }
+
+        // Make the POST request and get the response
+    var response = await Http.PostAsJsonAsync("http://localhost:5274/api/Staff", _newStaff);
+        if (response.IsSuccessStatusCode) // Check if the response is successful
+    {
+        // If successful, fetch the updated list of staff
         _staffList = await Http.GetFromJsonAsync<List<Staff>>("http://localhost:5274/api/Staff");
-        _newStaff = new();
+        _newStaff = new(); // Reset new staff form
+    }
+    else
+    {
+        // If not successful, handle the error (you can display a message)
+        var errorMessage = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Error: {errorMessage}");
+    }
+       
     }
 
     private string GetOutletName(int id)
@@ -59,23 +78,24 @@
         return _outlets.FirstOrDefault(o => o.Id == id)?.Name ?? "Unknown";
     }
 
-    
-    
-public class Staff
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Role { get; set; } // Admin, Staff
-    public int OutletId { get; set; }
-}
+    public class Staff
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+         public string Username { get; set; }
+        public string Password { get; set; }
 
-public class Outlet
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Location { get; set; }
-    public int Capacity { get; set; }
-   
-}
+        public string Role { get; set; } // Admin, Staff
+        public int OutletId { get; set; }
+        public string IcNo { get; set; } // Add IC No field
+    }
 
+    public class Outlet
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public int Capacity { get; set; }
+    }
 }
+ 

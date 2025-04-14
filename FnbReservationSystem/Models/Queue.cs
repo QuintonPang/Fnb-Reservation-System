@@ -7,5 +7,13 @@ public class Queue
     public string SpecialRequests { get; set; }
     public bool IsSeated { get; set; } // True if seated, false otherwise
         public int outletId { get; set; }
+            public DateTime DateTime { get; set; }
+
+             // Constructor to initialize DateTime with a default value (e.g., current date and time)
+    public Queue()
+    {
+        DateTime = DateTime.Now; // Default value is the current date and time
+    }
+
 
 }

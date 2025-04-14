@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FnbReservationSystem.Models;
 using FnbReservationSystem.Data;  // Add this line if missing
+using FnbReservationSystem.Services; // Ensure this namespace is included for WhatsAppService
 
 namespace FnbReservationSystem.Controllers
 {
@@ -9,11 +10,17 @@ namespace FnbReservationSystem.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
+
+        private readonly WhatsAppService _whatsAppService;
+
         private readonly ApplicationDbContext _context;
 
-        public ReservationController(ApplicationDbContext context)
+        public ReservationController(ApplicationDbContext context, WhatsAppService whatsAppService)
         {
             _context = context;
+                _whatsAppService = whatsAppService;
+                
+
         }
 
         // GET: api/Reservation
@@ -43,21 +50,11 @@ namespace FnbReservationSystem.Controllers
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
+
             return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservation);
         }
 
-        // PUT: api/Reservation/5/cancel
-        [HttpPut("{id}/cancel")]
-        public async Task<IActionResult> CancelReservation(int id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-                return NotFound();
-
-            reservation.Status = "Cancelled";
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+       
 
         // PUT: api/Reservation/5/done
         [HttpPut("{id}/done")]
@@ -83,11 +80,96 @@ public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] Rese
     var reservation = await _context.Reservations.FindAsync(id);
     if (reservation == null) return NotFound();
 
+if(update.Status=="Confirmed"){
+    
+  var outlet = await _context.Outlets
+            .Where(o => o.Id == reservation.outletId)
+            .FirstOrDefaultAsync();
+            string formattedDate = reservation.ReservationDateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+        var parameters = new List<WhatsAppService.TemplateParameter>
+{
+    new() { type = "text", text = reservation.CustomerName, parameter_name = "customer_name" },
+    new() { type = "text", text = outlet.Name, parameter_name = "outlet_name" },
+        new() { type = "text", text =   formattedDate, parameter_name = "datetime" }
+};
+
+await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "reservation_confirmation",
+    languageCode: "en",
+    parameters: parameters
+);
+}else if(update.Status=="Cancelled"){
+ 
+  var outlet = await _context.Outlets
+            .Where(o => o.Id == reservation.outletId)
+            .FirstOrDefaultAsync();
+            string formattedDate = reservation.ReservationDateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+        var parameters = new List<WhatsAppService.TemplateParameter>
+{
+    new() { type = "text", text = reservation.CustomerName, parameter_name = "customer_name" },
+        new() { type = "text", text =   formattedDate, parameter_name = "datetime" }
+};
+
+await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "your_reservation_has_been_cancelled ",
+    languageCode: "en",
+    parameters: parameters
+);
+}
     reservation.Status = update.Status;
     await _context.SaveChangesAsync();
 
     return NoContent();
 }
+
+public class CancelRequest
+{
+    public int Id { get; set; }
+    public string ContactNumber { get; set; }
+}
+
+
+[HttpPost("cancel")]
+public async Task<IActionResult> CancelReservation([FromBody] CancelRequest request)
+{
+    var reservation = await _context.Reservations.FindAsync(request.Id);
+
+    if (reservation == null)
+        return NotFound(new { message = "Reservation not found." });
+
+    if (reservation.ContactNumber != request.ContactNumber)
+        return BadRequest(new { message = "Contact number does not match." });
+ if (reservation.Status != "Pending")
+        return BadRequest(new { message = "Invalid Action." });
+    reservation.Status = "Cancelled";
+    await _context.SaveChangesAsync();
+
+
+  var outlet = await _context.Outlets
+            .Where(o => o.Id == reservation.outletId)
+            .FirstOrDefaultAsync();
+            string formattedDate = reservation.ReservationDateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+        var parameters = new List<WhatsAppService.TemplateParameter>
+{
+    new() { type = "text", text = reservation.CustomerName, parameter_name = "customer_name" },
+        new() { type = "text", text =   formattedDate, parameter_name = "datetime" }
+};
+
+await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "your_reservation_has_been_cancelled ",
+    languageCode: "en",
+    parameters: parameters
+);
+    return Ok(new { message = "Reservation cancelled successfully." });
+}
+
+
 
     }
 }

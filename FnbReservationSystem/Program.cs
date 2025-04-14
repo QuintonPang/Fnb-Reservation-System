@@ -6,6 +6,8 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using FnbReservationSystem.Services; // Ensure this namespace is included for WhatsAppService
+using FnbReservationSystem; // Ensure this namespace is included for WhatsAppService
 
 using FnbReservationSystem.Data; // Add this line if missing
 var builder = WebApplication.CreateBuilder(args);
@@ -31,34 +33,38 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 36)) // adjust to your MySQL version
     )
 );
+builder.Services.AddHttpClient<WhatsAppService>();
+builder.Services.Configure<WhatsAppSettings>(
+    builder.Configuration.GetSection("WhatsApp"));
+
 var app = builder.Build();
 
 app.MapControllers();
 
 // Configure WebSocket options
-app.UseWebSockets(new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromSeconds(120),
-    AllowedOrigins = { "http://localhost:3000" } // Replace with your frontend URL
-});
+// app.UseWebSockets(new WebSocketOptions
+// {
+//     KeepAliveInterval = TimeSpan.FromSeconds(120),
+//     AllowedOrigins = { "http://localhost:3000" } // Replace with your frontend URL
+// });
 
+ app.UseWebSockets();
 
+// // Middleware to handle WebSocket requests
+// app.Use(async (context, next) =>
+// {
+//     if (context.WebSockets.IsWebSocketRequest)
+//     {
+//         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+//         var webSocketManager = context.RequestServices.GetRequiredService<WebSocketManager>(); // Get WebSocketManager
 
-// Middleware to handle WebSocket requests
-app.Use(async (context, next) =>
-{
-    if (context.WebSockets.IsWebSocketRequest)
-    {
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        var webSocketManager = context.RequestServices.GetRequiredService<WebSocketManager>(); // Get WebSocketManager
-
-        await webSocketManager.HandleWebSocketAsync(webSocket); // Handle the WebSocket
-    }
-    else
-    {
-        await next();
-    }
-});
+//         await webSocketManager.HandleWebSocketAsync(webSocket); // Handle the WebSocket
+//     }
+//     else
+//     {
+//         await next();
+//     }
+// });
 
 app.UseCors("AllowAll");
 

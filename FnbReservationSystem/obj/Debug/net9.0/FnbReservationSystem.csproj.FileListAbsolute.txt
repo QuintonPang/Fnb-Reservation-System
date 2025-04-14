@@ -575,3 +575,4 @@ C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\F
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\FnbReservationSystem.genruntimeconfig.cache
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\ref\FnbReservationSystem.dll
 C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\obj\Debug\net9.0\FnbReservationSystem.sourcelink.json
+C:\Users\Asus\FnbReservationSystemMaster\FnbReservationSystem\bin\Debug\net9.0\Twilio.dll
