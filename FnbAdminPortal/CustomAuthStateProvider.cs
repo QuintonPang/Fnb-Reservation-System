@@ -47,13 +47,15 @@ namespace FnbAdminPortal
             return state;
         }
 
-          public void NotifyUserAuthentication(string role)
+          public void NotifyUserAuthentication(string role, int outletId)
 {
   
 var claims = new List<Claim>
 {
     new Claim(ClaimTypes.Name, role),
-    new Claim(ClaimTypes.Role, role) // THIS IS REQUIRED
+    new Claim(ClaimTypes.Role, role), // THIS IS REQUIRED
+    new Claim("outletId", outletId.ToString()) // Custom claim for Outlet ID
+
 };
 
     // Create the ClaimsPrincipal with the claims
@@ -84,5 +86,11 @@ var claims = new List<Claim>
             }
             return Convert.FromBase64String(base64);
         }
+
+        public void NotifyUserLogout()
+{
+    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
+}
+
     }
 }

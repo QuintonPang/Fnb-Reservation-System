@@ -58,7 +58,7 @@ public async Task<ActionResult<Staff>> PostStaff(Staff staff)
         return BadRequest(new { message = "Invalid IC number" });
     }
 
-    staff.Username = staff.Username.Split(' ')[0].ToLower(); // Ensure username is in lowercase
+    staff.Username = staff.Name.Split(' ')[0].ToLower(); // Ensure username is in lowercase
 
     _context.Staffs.Add(staff);
     await _context.SaveChangesAsync();

@@ -29,12 +29,17 @@ _whatsAppService = whatsAppService;
 
         // GET: api/Queue
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Queue>>> GetAllQueue()
+        public async Task<ActionResult<IEnumerable<Queue>>> GetAllQueue([FromQuery] int? outletId)
         {
-            return await _context.Queues
-                .Where(q => !q.IsSeated)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
+            var query = _context.Queues.AsQueryable();
+
+    if (outletId.HasValue)
+    {
+        query = query.Where(r => r.outletId == outletId.Value);
+    }
+
+    var result = await query.ToListAsync();
+    return result;
         }
 
         // POST: api/Queue

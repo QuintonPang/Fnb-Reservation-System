@@ -47,7 +47,7 @@ else
     {
         try
         {
-            reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation");
+            reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation?outletId=" + outletId);
         }
         catch (Exception ex)
         {
@@ -77,4 +77,7 @@ else
         public string Status { get; set; }
         public int OutletId { get; set; }
     }
+
+         [Parameter] public int outletId { get; set; }
+
 }

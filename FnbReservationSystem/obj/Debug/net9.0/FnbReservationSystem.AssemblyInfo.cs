@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FnbReservationSystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2de2e47e8cf7dcdedfd7a99a9699a87c3580f552")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3f64763087de755cbd506653b5168f0932a05397")]
 [assembly: System.Reflection.AssemblyProductAttribute("FnbReservationSystem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FnbReservationSystem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

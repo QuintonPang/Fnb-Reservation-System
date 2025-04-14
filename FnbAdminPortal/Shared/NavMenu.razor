@@ -1,6 +1,53 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Filled.Dashboard" IconColor="Color.Inherit">Home
+﻿@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@using System.Security.Claims
+
+<MudNavMenu>
+    <!-- Login link -->
+    <MudNavLink Href="login"   Icon="@Icons.Material.Filled.Login" IconColor="Color.Inherit">
+        Login
     </MudNavLink>
-    <MudNavLink Href="counter" Icon="@Icons.Filled.Timer" IconColor="Color.Inherit">Counter</MudNavLink>
-    <MudNavLink Href="fetchdata" Icon="@Icons.Filled.FileDownload" IconColor="Color.Inherit">Fetch data</MudNavLink>
+    
+   
+        <MudNavLink Href="javascript:void(0);" Icon="@Icons.Filled.ExitToApp" IconColor="Color.Inherit" OnClick="Logout">
+            Logout
+        </MudNavLink>
+    
 </MudNavMenu>
+
+@code {
+    private bool isLoggedIn = false;
+    private string userName = string.Empty;
+    private string userRole = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            isLoggedIn = true;
+            userName = user.Identity.Name;  // The name of the user (could be set during login)
+            userRole = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";  // Role of the user
+        }
+        else
+        {
+            isLoggedIn = false;
+        }
+    }
+
+    private async Task Logout()
+    {
+        // Clear the stored token from local storage
+        await LocalStorage.RemoveItemAsync("token");
+
+        // Notify the authentication state provider that the user has logged out
+        ((CustomAuthStateProvider)AuthStateProvider).NotifyUserLogout();
+
+        // Redirect the user to the login page
+        Navigation.NavigateTo("/login");
+    }
+}
+  

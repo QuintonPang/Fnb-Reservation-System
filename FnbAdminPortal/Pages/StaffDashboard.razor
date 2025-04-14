@@ -3,5 +3,28 @@
 
 <h3>Staff Dashboard</h3>
 <p>Welcome, Staff!</p>
-<QueueManagement />
-<ReservationManagement />
+<QueueManagement outletId="@outletId"/>
+<ReservationManagement  outletId="@outletId"/>
+
+
+@code {
+    private int outletId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var outletIdClaim = user.FindFirst("outletId")?.Value;
+            if (int.TryParse(outletIdClaim, out int parsedId))
+            {
+                outletId = parsedId;
+                Console.WriteLine($"Outlet ID: {outletId}");
+            }else{
+                outletId = 0;
+            }
+        }
+    }
+}

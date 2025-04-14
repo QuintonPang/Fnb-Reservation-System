@@ -25,9 +25,17 @@ namespace FnbReservationSystem.Controllers
 
         // GET: api/Reservation
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations([FromQuery] int? outletId)
         {
-            return await _context.Reservations.ToListAsync();
+             var query = _context.Reservations.AsQueryable();
+
+    if (outletId.HasValue)
+    {
+        query = query.Where(r => r.outletId == outletId.Value);
+    }
+
+    var result = await query.ToListAsync();
+    return result;
         }
 
         // GET: api/Reservation/5

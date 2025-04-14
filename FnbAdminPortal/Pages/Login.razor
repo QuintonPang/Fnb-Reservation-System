@@ -32,6 +32,7 @@
             return;
         }
 
+
         // Mock check for admin and staff login
         if (username == "admin" && password == "admin123")
       {
@@ -41,20 +42,48 @@
         
 
      // await AuthStateProvider.GetAuthenticationStateAsync();
-           ((CustomAuthStateProvider)   AuthStateProvider).NotifyUserAuthentication("Admin");
+           ((CustomAuthStateProvider)   AuthStateProvider).NotifyUserAuthentication("Admin",0);
             Navigation.NavigateTo("/admin-dashboard");
         }
-        else if (username == "staff" && password == "staff123")
+       
+        else
         {
-  //     await AuthStateProvider.GetAuthenticationStateAsync();
-           ((CustomAuthStateProvider)   AuthStateProvider).NotifyUserAuthentication("Staff");
+             // Send username and password to the backend for validation
+        var response = await Http.PostAsJsonAsync("http://localhost:5274/api/auth/login", new { Username = username, Password = password });
 
-            Navigation.NavigateTo("/staff-dashboard");
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+            if (result.Role == "Admin")
+            {
+                var token = result.Token;
+                await LocalStorage.SetItemAsync("token", token);
+                ((CustomAuthStateProvider)AuthStateProvider).NotifyUserAuthentication("Admin", 0);
+                Navigation.NavigateTo("/admin-dashboard");
+            }
+            else if (result.Role == "Staff")
+            {
+                ((CustomAuthStateProvider)AuthStateProvider).NotifyUserAuthentication("Staff", result.OutletId);
+                Navigation.NavigateTo("/staff-dashboard");
+            }
+            else
+            {
+                loginFailed = true;
+            }
         }
         else
         {
             loginFailed = true;
         }
+        }
+    }
+    
+    public class LoginResponse
+    {
+        public string Role { get; set; }
+        public string Token { get; set; }
+        public int OutletId { get; set; } // For staff role
     }
 }
 <!-- Compare this snippet from FnbAdminPortal/CustomAuthenticationStateProvider.cs: -->

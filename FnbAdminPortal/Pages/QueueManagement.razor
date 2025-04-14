@@ -40,13 +40,15 @@
 </MudContainer>
 
 @code {
+     [Parameter] public int outletId { get; set; }
+    
     private List<Queue> queues = new List<Queue>();
 
  protected override async Task OnInitializedAsync()
 {
     try
     {
-        var response = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+        var response = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue?outletId=" + outletId);
         if (response != null)
         {
             queues = response;
@@ -73,7 +75,7 @@
         if (response.IsSuccessStatusCode)
         {
             // Refresh the list of queues
-            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue?outletId=" + outletId);
         }
     }
 
