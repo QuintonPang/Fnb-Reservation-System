@@ -51,6 +51,7 @@ const QueueForm = () => {
       specialRequests,
       isSeated,
       outletId,
+      tableId:'',
     };
 
     // Simulate submitting the form (You can replace this with an API call)

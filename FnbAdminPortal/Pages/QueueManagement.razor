@@ -1,9 +1,7 @@
-@page "/queue-management"
 @inject HttpClient Http
 @inject AuthenticationStateProvider   AuthStateProvider
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager Navigation
-@attribute [Authorize(Roles = "Admin")]
 
 <MudContainer>
     <MudGrid>
@@ -17,18 +15,46 @@
                     <MudTable Items="queues" Hover="true" Bordered="true" Striped="true">
                         <HeaderContent>
                             <MudTh>Queue ID</MudTh>
-                            <MudTh>Is Seated</MudTh>
+                                                        <MudTh>Customer Name</MudTh>
+                                                        <MudTh>Contact Number</MudTh>
+
+                            <MudTh>Number of Guests</MudTh>
+                                                        <MudTh>Special Requests</MudTh>
+                                                        <MudTh>Tables</MudTh>
+
                             <MudTh>Actions</MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd DataLabel="Queue ID">@context.Id</MudTd>
-                            <MudTd DataLabel="Is Seated">@context.IsSeated</MudTd>
+                            <MudTd DataLabel="Queue ID">@context.Queue.Id</MudTd>
+                            <MudTd DataLabel="Name">@context.Queue.CustomerName</MudTd>
+                                                                                    <MudTd DataLabel="Name">@context.Queue.ContactNumber</MudTd>
+
+                                                        <MudTd DataLabel="Name">@context.Queue.NumberOfGuests</MudTd>
+                                                        <MudTd DataLabel="Name">@context.Queue.SpecialRequests</MudTd>
+  <MudTd DataLabel="Table IDs">
+            @if (context.TableIds != null && context.TableIds.Any())
+            {
+                <ul>
+                    @foreach (var tableId in context.TableIds)
+                    {
+                        <li>@tableId</li> 
+                    }
+                </ul>
+            }
+            else
+            {
+                <span>No tables assigned</span> 
+            }
+        </MudTd>
                             <MudTd DataLabel="Actions">
-                                <MudButton Color="Color.Primary" @onclick="() => DequeueAsync(context.Id)" Disabled="@context.IsSeated">
+                                <MudButton Color="Color.Primary" @onclick="() => DequeueAsync(context.Queue.Id)" Disabled="@context.Queue.IsSeated">
                                     Seat
                                 </MudButton>
-                                <MudButton Color="Color.Error" @onclick="() => RemoveQueueAsync(context.Id)">
+                                <!-- <MudButton Color="Color.Error" @onclick="() => RemoveQueueAsync(context.Queue.Id)">
                                     Remove
+                                </MudButton> -->
+                                <MudButton Color="Color.Error" @onclick="() => NoShowQueueAsync(context.Queue.Id)">
+                                    No Show
                                 </MudButton>
                             </MudTd>
                         </RowTemplate>
@@ -42,13 +68,15 @@
 @code {
      [Parameter] public int outletId { get; set; }
     
-    private List<Queue> queues = new List<Queue>();
+    private List<QueueWithTablesDto> queues = new List<QueueWithTablesDto>();
 
- protected override async Task OnInitializedAsync()
-{
-    try
+
+
+protected override async Task OnParametersSetAsync()
+{  try
     {
-        var response = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue?outletId=" + outletId);
+        Console.WriteLine("OUTLETID",outletId);
+        var response = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue?outletId=" + outletId);
         if (response != null)
         {
             queues = response;
@@ -56,13 +84,35 @@
         else
         {
             // Handle error (you can display an error message or log it)
-            queues = new List<Queue>();
+            queues = new List<QueueWithTablesDto>();
         }
     }
     catch (Exception ex)
     {
         // Log or handle the exception appropriately
-        queues = new List<Queue>();
+        queues = new List<QueueWithTablesDto>();
+    }
+}
+ protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        Console.WriteLine("OUTLETID",outletId);
+        var response = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue?outletId=" + outletId);
+        if (response != null)
+        {
+            queues = response;
+        }
+        else
+        {
+            // Handle error (you can display an error message or log it)
+            queues = new List<QueueWithTablesDto>();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log or handle the exception appropriately
+        queues = new List<QueueWithTablesDto>();
     }
 }
 
@@ -75,7 +125,7 @@
         if (response.IsSuccessStatusCode)
         {
             // Refresh the list of queues
-            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue?outletId=" + outletId);
+            queues = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue?outletId=" + outletId);
         }
     }
 
@@ -87,7 +137,18 @@
         if (response.IsSuccessStatusCode)
         {
             // Refresh the list of queues
-            queues = await Http.GetFromJsonAsync<List<Queue>>("http://localhost:5274/api/Queue");
+            queues = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue");
+        }
+    }
+    private async Task NoShowQueueAsync(int id)
+    {
+        // Call the API to remove the queue entry
+        var response = await Http.PutAsync($"http://localhost:5274/api/Queue/{id}/noShow", null);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Refresh the list of queues
+            queues = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue");
         }
     }
 
@@ -96,5 +157,17 @@
     {
         public int Id { get; set; }
         public bool IsSeated { get; set; }
+        public string CustomerName { get; set; }
+    public string ContactNumber { get; set; }
+    public int NumberOfGuests { get; set; }
+    public string SpecialRequests { get; set; }
+ 
     }
+
+    public class QueueWithTablesDto
+{
+    public Queue Queue { get; set; }
+    public List<string> TableIds { get; set; }
+}
+
 }

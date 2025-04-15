@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using System.Net.Http;          // For HttpClient
 using System.Collections.Generic;  // For IEnumerable<>
 using System.Linq;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FnbAdminPortal
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly ILocalStorageService _localStorage;
-        private readonly HttpClient _http;
+        private readonly HttpClient _http;  
 
         public CustomAuthStateProvider(ILocalStorageService localStorage, HttpClient http)
         {
@@ -20,34 +23,54 @@ namespace FnbAdminPortal
             _http = http;
         }
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+{
+    ClaimsIdentity identity = new();
+
+    try
+    {
+        var token = await _localStorage.GetItemAsStringAsync("token");
+        token = token?.Replace("\"", "").Trim(); // Clean quotes and whitespace
+
+        if (!string.IsNullOrWhiteSpace(token))
         {
-          //  string token = await _localStorage.GetItemAsStringAsync("token");
-         var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlNoYWhyaXlhciIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTUxNjIzOTAyMn0.l9E7Oypb-ozndpFUkeVhOYzhtjGEuFmdYdAxhbpXAFY";
+            
+            identity = new ClaimsIdentity(ParseToken(token), "jwt");
+            Console.WriteLine($"[DEBUG] Identity authenticated: {identity.IsAuthenticated}");
 
-            var identity = new ClaimsIdentity();
-//_http.DefaultRequestHeaders.Authorization = null;
-/*
-           if (!string.IsNullOrEmpty(token))
-            {
-                identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token.Replace("\"", ""));
-            }
+         foreach (var claim in ParseToken(token))
+    {
+        Console.WriteLine($"[DEBUG] Claim Type: {claim.Type}, Value: {claim.Value}");
+    }
 
-            var user = new ClaimsPrincipal(identity);
-            var state = new AuthenticationState(user);
-*/
-       //   NotifyAuthenticationStateChanged(Task.FromResult(state));
-       
-                   var user = new ClaimsPrincipal(identity);
+            _http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Replace("\"", ""));
 
-            var state = new AuthenticationState(user);
-
-            return state;
         }
+    }
+    catch (InvalidOperationException)
+    {
+        // JSInterop is not available during prerendering
+        // Return unauthenticated state for now
+        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+    }
 
-          public void NotifyUserAuthentication(string role, int outletId)
+    // // // Hardcoded claims for always-authenticated user
+    // var claims = new List<Claim>
+    // {
+    //     new Claim(ClaimTypes.Name, "Admin User"),
+    //     new Claim(ClaimTypes.Role, "Admin"),
+    //     new Claim("outletId", "1")
+    // };
+
+    // var identity = new ClaimsIdentity(claims, "jwt"); // <- "jwt" makes the user authenticated
+    var user = new ClaimsPrincipal(identity);
+    var state = new AuthenticationState(user);
+
+    return new AuthenticationState(new ClaimsPrincipal(identity));
+}
+
+          public async void NotifyUserAuthentication(string role, int outletId)
 {
   
 var claims = new List<Claim>
@@ -59,38 +82,76 @@ var claims = new List<Claim>
 };
 
     // Create the ClaimsPrincipal with the claims
-    var identity = new ClaimsIdentity(claims, "custom");
+    var identity = new ClaimsIdentity(claims, "jwt");
     var user = new ClaimsPrincipal(identity);
 
     // Create the AuthenticationState with the ClaimsPrincipal
     var authState = new AuthenticationState(user);
+        await _localStorage.SetItemAsync("token", GenerateTokenFromClaims(claims)); // Store the token in local storage
 
     // Notify that the authentication state has changed
     NotifyAuthenticationStateChanged(Task.FromResult(authState));
+}public List<Claim> ParseToken(string token)
+{
+    Console.WriteLine("[DEBUG] Inside ParseToken");
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+
+    if (tokenHandler.CanReadToken(token))
+    {
+        Console.WriteLine("[DEBUG] Can read token");
+
+        var jwtToken = tokenHandler.ReadJwtToken(token);
+
+        Console.WriteLine($"[DEBUG] Claims found: {jwtToken.Claims.Count()}");
+
+        return jwtToken.Claims.ToList();
+    }
+    else
+    {
+        Console.WriteLine("[DEBUG] Cannot read token");
+    }
+
+    return new List<Claim>();
 }
 
-        public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
-        {
-            var payload = jwt.Split('.')[1];
-            var jsonBytes = ParseBase64WithoutPadding(payload);
-            var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
-        }
-
-        private static byte[] ParseBase64WithoutPadding(string base64)
-        {
-            switch (base64.Length % 4)
-            {
-                case 2: base64 += "=="; break;
-                case 3: base64 += "="; break;
-            }
-            return Convert.FromBase64String(base64);
-        }
-
-        public void NotifyUserLogout()
+private byte[] ParseBase64WithoutPadding(string base64)
 {
+    switch (base64.Length % 4)
+    {
+        case 2: base64 += "=="; break;
+        case 3: base64 += "="; break;
+    }
+
+    return Convert.FromBase64String(base64);
+}
+
+
+        
+
+        public async void NotifyUserLogout()
+{
+            await _localStorage.SetItemAsync("token",""); // Store the token in local storage
+
     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
 }
+ // Method to generate JWT token from claims
+    public string GenerateTokenFromClaims(List<Claim> claims)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("qD0b3ERlzPYK8XBz0H5np1f9hNq9LO00pXGVeDhZIg4=")); // Secret key for signing
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        // Create a JWT token
+        var token = new JwtSecurityToken(
+            issuer: "your-app",
+            audience: "your-users",
+            claims: claims,  // Pass the claims to the token
+            expires: DateTime.UtcNow.AddHours(24),  // Token expiration time
+            signingCredentials: creds
+        );
+
+        // Convert the token to a string
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
     }
 }

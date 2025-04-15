@@ -35,6 +35,9 @@ else
                 <MudButton Disabled="@((context.Status == "Cancelled"))" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "Cancelled"))" Class="ml-2">
                     Cancel
                 </MudButton>
+                 <MudButton Disabled="@((context.Status == "NoShow"))" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "NoShow"))" Class="ml-2">
+                    No Show
+                </MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -42,7 +45,19 @@ else
 
 @code {
     private List<Reservation> reservations;
+     [Parameter] public int outletId { get; set; }
 
+protected override async Task OnParametersSetAsync()
+{
+ try
+        {
+            reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation?outletId=" + outletId);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching reservations: {ex.Message}");
+        }
+}
     protected override async Task OnInitializedAsync()
     {
         try
@@ -78,6 +93,5 @@ else
         public int OutletId { get; set; }
     }
 
-         [Parameter] public int outletId { get; set; }
 
 }

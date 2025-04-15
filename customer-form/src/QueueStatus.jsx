@@ -49,36 +49,55 @@ const QueueStatus = () => {
     return () => socket.close();
   }, [toast]);
 
+// Function to find the current queue and count people ahead
+function countPeopleAhead(queueData, currentQueueId) {
+  // Find the current queue based on queueId
+  const currentQueue = queueData.find(item => item.Queue.Id.toString() === currentQueueId);
 
+  
+  if (!currentQueue) {
+    toast({
+      title: "Not Found",
+      description: "Queue ID not found.",
+      status: "warning",
+      duration: 4000,
+      isClosable: true,
+    });
+    setPeopleAhead(null);
+    return null;
+   
+  }
+  const myTime = new Date(currentQueue.Queue.DateTime);
+
+  const currentTableIds = currentQueue.TableIds; // Get all tableIds for the current queue
+  const currentOutletId = currentQueue.Queue.outletId; // Get outletId
+  let totalPeopleAhead = 0;
+
+  // Iterate through the queue data and count people ahead in the same outlet
+  for (const item of queueData) {
+    // Skip if it's the current queue
+    // if (item.Queue.Id === currentQueueId) {
+    //   break;  // Exit the loop when we reach the current queue
+    // }
+    // Count people ahead in the same outlet and matching tableIds
+    if (item.Queue.outletId === currentOutletId && item.TableIds.some(tableId => currentTableIds.includes(tableId))     &&   new Date(item?.Queue?.DateTime).getTime() < myTime.getTime()
+    ) {
+  console.log("DONE")
+      totalPeopleAhead += 1;
+    }
+  }
+
+  return totalPeopleAhead;
+}
   useEffect(()=>{
     if(!id||!queue) return;
     console.log(queue)
     checkQueue(id)
   },[id,queue])
   const checkQueue = (id) => {
-    const myQueue =Array.isArray(queue)&& queue.find((q) => q.Id?.toString() === id.toString());
 
-    if (!myQueue) {
-      toast({
-        title: "Not Found",
-        description: "Queue ID not found.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      setPeopleAhead(null);
-      return;
-    }
-    
-
-    const myTime = new Date(myQueue.DateTime);
-    const outletId = myQueue.outletId?.toString();
-
-    const aheadCount = queue.filter(
-      (q) =>
-        q.outletId?.toString() === outletId &&
-        new Date(q.DateTime).getTime() < myTime.getTime()
-    ).length;
+  
+    const aheadCount = countPeopleAhead(queue, id);
 
     setPeopleAhead(aheadCount);
   };

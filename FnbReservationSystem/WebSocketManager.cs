@@ -22,7 +22,7 @@ public class WebSocketManager
     }
 
     // Handle incoming WebSocket connections and broadcast messages
-    public async Task HandleWebSocketAsync(WebSocket webSocket, List<Queue>queues)
+    public async Task HandleWebSocketAsync(WebSocket webSocket, List<QueueWithTablesDto> queues)
     {
         AddSocket(webSocket); // Store the socket connection
 
@@ -67,23 +67,41 @@ public class WebSocketManager
         }
     }
 
-     public static async Task BroadcastQueueUpdate(List<Queue> queue)
+    //  public static async Task BroadcastQueueUpdate(List<Queue> queue)
+    // {
+    //     var message = JsonSerializer.Serialize(queue);
+    //     var buffer = Encoding.UTF8.GetBytes(message);
+
+    //     Console.WriteLine("RANN");
+
+    //     foreach (var client in _sockets)
+    //     {
+    //                                 Console.WriteLine("RANN2222");
+
+    //         if (client.State == WebSocketState.Open)
+    //         {
+    //                     Console.WriteLine("RANN333");
+
+    //             await client.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+    //         }
+    //     }
+    // }
+
+    public static async Task BroadcastQueueUpdate(List<QueueWithTablesDto> queueWithTables)
+{
+    var message = JsonSerializer.Serialize(queueWithTables);
+    var buffer = Encoding.UTF8.GetBytes(message);
+
+    Console.WriteLine("Broadcasting queue update...");
+
+    foreach (var client in _sockets)
     {
-        var message = JsonSerializer.Serialize(queue);
-        var buffer = Encoding.UTF8.GetBytes(message);
-
-        Console.WriteLine("RANN");
-
-        foreach (var client in _sockets)
+        if (client.State == WebSocketState.Open)
         {
-                                    Console.WriteLine("RANN2222");
-
-            if (client.State == WebSocketState.Open)
-            {
-                        Console.WriteLine("RANN333");
-
-                await client.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
+            Console.WriteLine("Sending to client...");
+            await client.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
+}
+
 }

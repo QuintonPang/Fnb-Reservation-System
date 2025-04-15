@@ -27,20 +27,34 @@ _whatsAppService = whatsAppService;
             _context = context;
         }
 
-        // GET: api/Queue
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Queue>>> GetAllQueue([FromQuery] int? outletId)
-        {
-            var query = _context.Queues.AsQueryable();
+  [HttpGet]
+public async Task<ActionResult<IEnumerable<QueueWithTablesDto>>> GetAllQueue([FromQuery] int? outletId)
+{
+    var query = _context.Queues.AsQueryable();
 
     if (outletId.HasValue)
     {
-        query = query.Where(r => r.outletId == outletId.Value);
+        query = query.Where(r => r.outletId == outletId.Value && !r.NoShow && !r.IsSeated);
     }
 
-    var result = await query.ToListAsync();
+    var queues = await query.ToListAsync();
+
+    var queueIds = queues.Select(q => q.Id).ToList();
+
+    var tableMap = await _context.QueueTables
+        .Where(qt => queueIds.Contains(qt.queueId))
+        .GroupBy(qt => qt.queueId)
+        .ToDictionaryAsync(g => g.Key, g => g.Select(qt => qt.tableId).ToList());
+
+    var result = queues.Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = tableMap.ContainsKey(q.Id) ? tableMap[q.Id] : new List<string>()
+    }).ToList();
+
     return result;
-        }
+}
+
 
         // POST: api/Queue
         [HttpPost]
@@ -84,7 +98,8 @@ _whatsAppService = whatsAppService;
         var queueTable = new QueueTable
         {
             queueId = queue.Id,
-            tableId = table.Id
+            tableId = table.Id,
+            type = "Q"
         };
         _context.QueueTables.Add(queueTable);
     }
@@ -92,9 +107,16 @@ _whatsAppService = whatsAppService;
     await _context.SaveChangesAsync();
 
  var queues = await _context.Queues
-                .Where(q => !q.IsSeated)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
+    .Where(q => !q.IsSeated && !q.NoShow)
+    .Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = _context.QueueTables
+            .Where(qt => qt.queueId == q.Id)
+            .Select(qt => qt.tableId)
+            .ToList()
+    }).ToListAsync();
+
 
   var outlet = await _context.Outlets
             .Where(o => o.Id == queue.outletId)
@@ -113,6 +135,7 @@ await _whatsAppService.SendTemplateMessageAsync(
     parameters: parameters
 );
 
+
 // Instead of _webSocketManager.BroadcastQueueUpdate, use the class name directly
 await WebSocketManager.BroadcastQueueUpdate(queues);
             return CreatedAtAction(nameof(GetQueueById), new { id = queue.Id }, queue);
@@ -130,9 +153,10 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
             return entry;
         }
 
-        // PUT: api/Queue/5/dequeue
-        [HttpPut("{id}/dequeue")]
-        public async Task<IActionResult> MarkAsSeated(int id)
+
+           // PUT: api/Queue/5/noShow
+        [HttpPut("{id}/noShow")]
+        public async Task<IActionResult> MarkAsNoShow(int id)
         {
  
 // Instead of _webSocketManager.BroadcastQueueUpdate, use the class name directly
@@ -141,8 +165,11 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
             if (queueEntry == null)
                 return NotFound();
 
-if(!queueEntry.NoShow){
 
+    if (queueEntry != null)
+    {
+
+        
      var noShow = await _context.NoShows
         .FirstOrDefaultAsync(n => n.ContactNumber == queueEntry.ContactNumber);
 
@@ -151,45 +178,121 @@ if(!queueEntry.NoShow){
         // Update existing record
         noShow.count += 1;
         _context.NoShows.Update(noShow);
-    }
-    else
-    {
-        // Add new record
-        var newNoShow = new NoShow
-        {
-            ContactNumber = queueEntry.ContactNumber,
-            count = 1
-        };
-        await _context.NoShows.AddAsync(newNoShow);
-    }
-
-                 BannedCustomer bannedCustomer = new BannedCustomer();
+                  
+        if(noShow.count==3){
+            BannedCustomer bannedCustomer = new BannedCustomer();
         
             bannedCustomer.BanDate = DateTime.UtcNow;
-            bannedCustomer.CustomerName = queueEntry.ContactNumber;
+            bannedCustomer.CustomerName = queueEntry.CustomerName;
             bannedCustomer.ContactNumber = queueEntry.ContactNumber;
             bannedCustomer.Reason = "Automatically banned for not showing up for 3 times.";
 
             _context.BannedCustomers.Add(bannedCustomer);
 
+            await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "banned",
+    languageCode: "en",
+    parameters: []
+);
+}
 
-                        queueEntry.IsSeated = false;
-                        queueEntry.NoShow = true;
+        }else{
+             // Otherwise, create a new NoShow record
+            var newNoShow = new NoShow
+            {
 
-                
-                }else{
-            queueEntry.IsSeated = true;
+                ContactNumber = queueEntry.ContactNumber,
+                count = 1
+            };
+            _context.NoShows.Add(newNoShow);
+        }
+    }
+    else
+    {
+        return NotFound();
+    }
 
-                }
+ 
+    
+queueEntry.NoShow = true;
+            
+     _context.Entry(queueEntry).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            var queues = await _context.Queues
-                .Where(q => !q.IsSeated)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
-
+     
+ var queues = await _context.Queues
+    .Where(q => !q.IsSeated && !q.NoShow)
+    .Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = _context.QueueTables
+            .Where(qt => qt.queueId == q.Id)
+            .Select(qt => qt.tableId)
+            .ToList()
+    }).ToListAsync();  
 
 var firstInQueue = await _context.Queues
-    .Where(q => !q.IsSeated&& q.outletId == queueEntry.outletId)
+    .Where(q => !q.IsSeated&& q.outletId == queueEntry.outletId && !q.NoShow)
+    .OrderBy(q => q.Id )
+    .FirstOrDefaultAsync();
+
+    
+
+    if (firstInQueue != null)
+{
+
+      var outlet = await _context.Outlets
+            .Where(o => o.Id == firstInQueue.outletId)  
+            .FirstOrDefaultAsync();
+
+    var parameters = new List<WhatsAppService.TemplateParameter>
+{
+    new() { type = "text", text = firstInQueue.CustomerName, parameter_name = "customer_name" },
+    new() { type = "text", text = outlet.Name, parameter_name = "outlet_name" },
+};
+
+await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "your_turn_has_arrived",
+    languageCode: "en",
+    parameters: parameters
+);
+}
+
+                      
+await WebSocketManager.BroadcastQueueUpdate(queues);
+
+            return NoContent();
+        }
+
+
+        // PUT: api/Queue/5/dequeue
+        [HttpPut("{id}/dequeue")]
+        public async Task<IActionResult> MarkAsSeated(int id)
+        {
+
+            
+            var queueEntry = await _context.Queues.FindAsync(id);
+            if (queueEntry == null)
+                return NotFound();
+
+            queueEntry.IsSeated=true;
+     _context.Entry(queueEntry).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+     
+ var queues = await _context.Queues
+    .Where(q => !q.IsSeated && !q.NoShow)
+    .Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = _context.QueueTables
+            .Where(qt => qt.queueId == q.Id)
+            .Select(qt => qt.tableId)
+            .ToList()
+    }).ToListAsync();
+var firstInQueue = await _context.Queues
+    .Where(q => !q.IsSeated&& q.outletId == queueEntry.outletId&& !q.NoShow)
     .OrderBy(q => q.Id )
     .FirstOrDefaultAsync();
 
@@ -235,12 +338,17 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
             await _context.SaveChangesAsync();
 
  var queues = await _context.Queues
-                .Where(q => !q.IsSeated)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
-                
+    .Where(q => !q.IsSeated && !q.NoShow)
+    .Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = _context.QueueTables
+            .Where(qt => qt.queueId == q.Id)
+            .Select(qt => qt.tableId)
+            .ToList()
+    }).ToListAsync();
 var firstInQueue = await _context.Queues
-    .Where(q => !q.IsSeated&& q.outletId == queueEntry.outletId)
+    .Where(q => !q.IsSeated&& q.outletId == queueEntry.outletId && !q.NoShow)
     .OrderBy(q => q.Id)
     .FirstOrDefaultAsync();
 
@@ -283,11 +391,19 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
                 var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
                         Console.WriteLine("WebSocket connection accepted.");
 
-   var queues = await _context.Queues
-                .Where(q => !q.IsSeated)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
-                await _webSocketManager.HandleWebSocketAsync(webSocket,queues);
+ var queueWithTables = await _context.Queues
+    .Where(q => !q.IsSeated && !q.NoShow)
+    .Select(q => new QueueWithTablesDto
+    {
+        Queue = q,
+        TableIds = _context.QueueTables
+            .Where(qt => qt.queueId == q.Id)
+            .Select(qt => qt.tableId)
+            .ToList()
+    }).ToListAsync();
+
+
+                await _webSocketManager.HandleWebSocketAsync(webSocket, queueWithTables);
             }
             else
             {
