@@ -1,10 +1,19 @@
 @page "/staff-dashboard"
 @inject AuthenticationStateProvider AuthProvider
+   @attribute [Authorize(Roles = "Staff")]
 
-<h3>Staff Dashboard</h3>
-<p>Welcome, Staff!</p>
-<QueueManagement outletId="@outletId"/>
-<ReservationManagement  outletId="@outletId"/>
+<h1>Staff Dashboard</h1>
+
+<MudTabs>
+    <MudTabPanel Text="Queue Management" Icon="@Icons.Filled.Queue">
+        <QueueManagement outletId="@outletId" />
+    </MudTabPanel>
+    <MudTabPanel Text="Reservation Management" Icon="@Icons.Filled.Event">
+        <ReservationManagement outletId="@outletId" />
+    </MudTabPanel>
+</MudTabs>
+
+
 
 
 @code {

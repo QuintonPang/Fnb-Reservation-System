@@ -10,6 +10,11 @@ namespace FnbReservationSystem.Data
     public DbSet<Outlet> Outlets { get; set; }
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<BannedCustomer> BannedCustomers { get; set; }
+        public DbSet<Table> Tables { get; set; }
+
+    public DbSet<QueueTable> QueueTables { get; set; }
+    public DbSet<NoShow> NoShows { get; set; }
+
 }
 
 }

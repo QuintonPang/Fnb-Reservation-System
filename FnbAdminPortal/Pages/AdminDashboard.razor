@@ -2,9 +2,18 @@
 @using Microsoft.AspNetCore.Components.Authorization
    @attribute [Authorize(Roles = "Admin")]
 
-<h3>Admin Dashboard</h3>
-<p>Welcome, Admin!</p>
-<BannedCustomerManagement />
-<OutletManagement />
-<StaffManagement />
-
+<h1>Admin Dashboard</h1>
+<MudTabs>
+    <MudTabPanel Text="Banned Customer Management" Icon="@Icons.Filled.Block">
+        <BannedCustomerManagement />
+    </MudTabPanel>
+    <MudTabPanel Text="Table Management" Icon="@Icons.Filled.TableChart">
+        <TableManagement />
+    </MudTabPanel>
+    <MudTabPanel Text="Outlet Management" Icon="@Icons.Filled.Storefront">
+        <OutletManagement />
+    </MudTabPanel>
+    <MudTabPanel Text="Staff Management" Icon="@Icons.Filled.Person">
+        <StaffManagement />
+    </MudTabPanel>
+</MudTabs>

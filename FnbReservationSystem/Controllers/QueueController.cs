@@ -46,9 +46,50 @@ _whatsAppService = whatsAppService;
         [HttpPost]
         public async Task<ActionResult<Queue>> AddToQueue(Queue queue)
         {
-            queue.IsSeated = false;
-            _context.Queues.Add(queue);
-            await _context.SaveChangesAsync();
+             queue.IsSeated = false;
+
+    // 🔍 Get all suitable tables (same outlet, not seated, order by smallest first)
+    var availableTables = await _context.Tables
+        .Where(t => t.outletId == queue.outletId)
+        .OrderBy(t => t.max)
+        .ToListAsync();
+
+    var selectedTables = new List<Table>();
+    int totalSeats = 0;
+
+    foreach (var table in availableTables)
+    {
+        if (totalSeats < queue.NumberOfGuests)
+        {
+            selectedTables.Add(table);
+            totalSeats += table.max;
+        }
+
+        if (totalSeats >= queue.NumberOfGuests)
+            break;
+    }
+
+    if (totalSeats < queue.NumberOfGuests)
+    {
+        return BadRequest("Not enough tables available to accommodate the group.");
+    }
+
+    // Save the queue
+    _context.Queues.Add(queue);
+    await _context.SaveChangesAsync();
+
+    // 🔗 Insert into QueueTables (many-to-many)
+    foreach (var table in selectedTables)
+    {
+        var queueTable = new QueueTable
+        {
+            queueId = queue.Id,
+            tableId = table.Id
+        };
+        _context.QueueTables.Add(queueTable);
+    }
+
+    await _context.SaveChangesAsync();
 
  var queues = await _context.Queues
                 .Where(q => !q.IsSeated)
@@ -100,7 +141,46 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
             if (queueEntry == null)
                 return NotFound();
 
+if(!queueEntry.NoShow){
+
+     var noShow = await _context.NoShows
+        .FirstOrDefaultAsync(n => n.ContactNumber == queueEntry.ContactNumber);
+
+    if (noShow != null)
+    {
+        // Update existing record
+        noShow.count += 1;
+        _context.NoShows.Update(noShow);
+    }
+    else
+    {
+        // Add new record
+        var newNoShow = new NoShow
+        {
+            ContactNumber = queueEntry.ContactNumber,
+            count = 1
+        };
+        await _context.NoShows.AddAsync(newNoShow);
+    }
+
+                 BannedCustomer bannedCustomer = new BannedCustomer();
+        
+            bannedCustomer.BanDate = DateTime.UtcNow;
+            bannedCustomer.CustomerName = queueEntry.ContactNumber;
+            bannedCustomer.ContactNumber = queueEntry.ContactNumber;
+            bannedCustomer.Reason = "Automatically banned for not showing up for 3 times.";
+
+            _context.BannedCustomers.Add(bannedCustomer);
+
+
+                        queueEntry.IsSeated = false;
+                        queueEntry.NoShow = true;
+
+                
+                }else{
             queueEntry.IsSeated = true;
+
+                }
             await _context.SaveChangesAsync();
             var queues = await _context.Queues
                 .Where(q => !q.IsSeated)

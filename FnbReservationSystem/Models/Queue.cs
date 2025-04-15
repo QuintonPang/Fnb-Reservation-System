@@ -6,6 +6,8 @@ public class Queue
     public int NumberOfGuests { get; set; }
     public string SpecialRequests { get; set; }
     public bool IsSeated { get; set; } // True if seated, false otherwise
+        public bool NoShow { get; set; } // True if seated, false otherwise
+        public string tableId { get; set; } // Foreign key to the Table entity
         public int outletId { get; set; }
             public DateTime DateTime { get; set; }
 
@@ -13,6 +15,7 @@ public class Queue
     public Queue()
     {
         DateTime = DateTime.Now; // Default value is the current date and time
+        NoShow = false; // Default value for NoShow
     }
 
 

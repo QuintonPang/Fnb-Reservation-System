@@ -1,0 +1,103 @@
+@page "/table-management"
+@inject HttpClient Http
+@using System.Net.Http.Json
+@using FnbAdminPortal.Models
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5">Table Management</MudText>
+
+    <MudTable Items="tables" Hover="true" Striped="true">
+        <HeaderContent>
+            <MudTh>Id</MudTh>
+            <MudTh>Min</MudTh>
+            <MudTh>Max</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.min</MudTd>
+            <MudTd>@context.max</MudTd>
+            <MudTd>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteTable(context.Id)">
+                    Delete
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudDivider Class="my-4" />
+
+    <MudText Typo="Typo.h6">Add New Table</MudText>
+
+    <MudTextField Label="ID" @bind-Value="newTable.Id" />
+    <MudTextField Label="Min" @bind-Value="newTable.min" />
+    <MudTextField Label="Max" @bind-Value="newTable.max" />
+ <MudSelect @bind-Value="newTable.outletId" Label="Outlet">
+        @foreach (var outlet in _outlets)
+        {
+            <MudSelectItem Value="@outlet.Id">@outlet.Name</MudSelectItem>
+        }
+    </MudSelect>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CreateTable" Class="mt-2">
+        Create Table
+    </MudButton>
+</MudPaper>
+
+@code {
+        private List<Outlet> _outlets = new();
+
+    private List<Table> tables = new();
+    private Table newTable = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+                _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+
+        await LoadTables();
+    }
+
+    private async Task LoadTables()
+    {
+        
+        tables = await Http.GetFromJsonAsync<List<Table>>("http://localhost:5274/api/Table");
+    }
+
+    private async Task CreateTable()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:5274/api/Table", newTable);
+        if (response.IsSuccessStatusCode)
+        {
+            newTable = new();
+            await LoadTables();
+        }
+    }
+
+    private async Task DeleteTable(string id)
+    {
+        var response = await Http.DeleteAsync($"http://localhost:5274/api/Table/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadTables();
+        }
+    }
+
+    public class Table
+    {
+        public string Id { get; set; }
+        public int min { get; set; }
+        public int max { get; set; }
+                public int outletId { get; set; }
+
+        
+    }
+
+       public class Outlet
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public int Capacity { get; set; }
+    }
+}
+
+

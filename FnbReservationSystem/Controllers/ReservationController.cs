@@ -127,6 +127,26 @@ await _whatsAppService.SendTemplateMessageAsync(
     languageCode: "en",
     parameters: parameters
 );
+}else if(update.Status=="Noshow"){
+ var noShow = await _context.NoShows
+        .FirstOrDefaultAsync(n => n.ContactNumber == reservation.ContactNumber);
+
+    if (noShow != null)
+    {
+        // Update existing record
+        noShow.count += 1;
+        _context.NoShows.Update(noShow);
+    }
+    else
+    {
+        // Add new record
+        var newNoShow = new NoShow
+        {
+            ContactNumber = reservation.ContactNumber,
+            count = 1
+        };
+        await _context.NoShows.AddAsync(newNoShow);
+    }
 }
     reservation.Status = update.Status;
     await _context.SaveChangesAsync();
