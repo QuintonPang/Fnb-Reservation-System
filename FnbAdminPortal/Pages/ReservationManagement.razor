@@ -1,5 +1,6 @@
 @page "/reservation-management"
 @inject HttpClient Http
+@using System.Threading;
 
 <h3>Reservation Management</h3>
 
@@ -29,13 +30,16 @@ else
             <MudTd>@context.NumberOfGuests</MudTd>
             <MudTd>@context.Status</MudTd>
             <MudTd>
-                <MudButton Disabled="@((context.Status == "Confirmed"))" Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => UpdateStatus(context.Id, "Confirmed"))">
+                <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled="@((context.Status !="Pending"))" OnClick="@(() => Done(context.Id))">
+                    Complete
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => UpdateStatus(context.Id, "Confirmed"))" Disabled="@((context.Status !="Pending"))" Class="ml-2">
                     Confirm
                 </MudButton>
-                <MudButton Disabled="@((context.Status == "Cancelled"))" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "Cancelled"))" Class="ml-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "Cancelled"))" Disabled="@((context.Status !="Pending"))"  Class="ml-2">
                     Cancel
                 </MudButton>
-                 <MudButton Disabled="@((context.Status == "NoShow"))" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "NoShow"))" Class="ml-2">
+                 <MudButton  Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => UpdateStatus(context.Id, "NoShow"))"  Disabled="@((context.Status !="Pending"))" Class="ml-2">
                     No Show
                 </MudButton>
             </MudTd>
@@ -46,6 +50,7 @@ else
 @code {
     private List<Reservation> reservations;
      [Parameter] public int outletId { get; set; }
+        private Timer _timer;
 
 protected override async Task OnParametersSetAsync()
 {
@@ -60,9 +65,17 @@ protected override async Task OnParametersSetAsync()
 }
     protected override async Task OnInitializedAsync()
     {
+        
         try
         {
+              _timer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>         {
             reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation?outletId=" + outletId);
+                        StateHasChanged(); // Ensure UI updates after error
+
+            });
+        }, null, 0, 3000);  // Fetch every 1 second (1000ms)
         }
         catch (Exception ex)
         {
@@ -72,13 +85,27 @@ protected override async Task OnParametersSetAsync()
 
     private async Task UpdateStatus(int id, string status)
     {
-        var updateRequest = new { Status = status };
+
+
+        var updateRequest = new { CustomerName="",ContactNumber="",Status = status };
+
+        
+
         var response = await Http.PutAsJsonAsync($"http://localhost:5274/api/Reservation/{id}/status", updateRequest);
         if (response.IsSuccessStatusCode)
         {
-            var reservation = reservations.FirstOrDefault(r => r.Id == id);
-            if (reservation != null)
-                reservation.Status = status;
+                       reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation?outletId=" + outletId);
+
+      
+        }
+    }
+    private async Task Done(int id)
+    {
+        var response = await Http.PutAsync($"http://localhost:5274/api/Reservation/{id}/done", null);
+        if (response.IsSuccessStatusCode)
+        {
+                      reservations = await Http.GetFromJsonAsync<List<Reservation>>("http://localhost:5274/api/Reservation?outletId=" + outletId);
+
         }
     }
 
@@ -94,4 +121,8 @@ protected override async Task OnParametersSetAsync()
     }
 
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

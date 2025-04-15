@@ -179,7 +179,7 @@ await WebSocketManager.BroadcastQueueUpdate(queues);
         noShow.count += 1;
         _context.NoShows.Update(noShow);
                   
-        if(noShow.count==3){
+        if(noShow.count>=3){
             BannedCustomer bannedCustomer = new BannedCustomer();
         
             bannedCustomer.BanDate = DateTime.UtcNow;

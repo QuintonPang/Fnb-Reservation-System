@@ -2,6 +2,7 @@
 @inject AuthenticationStateProvider   AuthStateProvider
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager Navigation
+@using System.Threading;
 
 <MudContainer>
     <MudGrid>
@@ -69,7 +70,8 @@
      [Parameter] public int outletId { get; set; }
     
     private List<QueueWithTablesDto> queues = new List<QueueWithTablesDto>();
-
+        private Timer _timer;
+ 
 
 
 protected override async Task OnParametersSetAsync()
@@ -95,19 +97,34 @@ protected override async Task OnParametersSetAsync()
 }
  protected override async Task OnInitializedAsync()
 {
+
+
     try
     {
-        Console.WriteLine("OUTLETID",outletId);
-        var response = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue?outletId=" + outletId);
+
+          _timer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>         {
+ var response = await Http.GetFromJsonAsync<List<QueueWithTablesDto>>("http://localhost:5274/api/Queue?outletId=" + outletId);
+                    Console.WriteLine("QQQQ");
+
         if (response != null)
         {
             queues = response;
+                        Console.WriteLine("QQQQ2");
+                                                StateHasChanged(); // Ensure UI updates after error
+
+
         }
         else
         {
             // Handle error (you can display an error message or log it)
             queues = new List<QueueWithTablesDto>();
         }
+
+            });
+        }, null, 0, 3000);  // Fetch every 1 second (1000ms)
+       
     }
     catch (Exception ex)
     {
@@ -170,4 +187,8 @@ protected override async Task OnParametersSetAsync()
     public List<string> TableIds { get; set; }
 }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
 }

@@ -65,7 +65,7 @@ namespace FnbReservationSystem.Controllers
        
 
         // PUT: api/Reservation/5/done
-        [HttpPut("{id}/done")]
+        [HttpPut("{id}/done")]  
         public async Task<IActionResult> MarkReservationDone(int id)
         {
             var reservation = await _context.Reservations.FindAsync(id);
@@ -73,6 +73,8 @@ namespace FnbReservationSystem.Controllers
                 return NotFound();
 
             reservation.Status = "Done";
+                 _context.Entry(reservation).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -84,6 +86,9 @@ namespace FnbReservationSystem.Controllers
 
         [HttpPut("{id}/status")]
 public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] Reservation update)
+{
+
+    try
 {
     var reservation = await _context.Reservations.FindAsync(id);
     if (reservation == null) return NotFound();
@@ -136,6 +141,24 @@ await _whatsAppService.SendTemplateMessageAsync(
         // Update existing record
         noShow.count += 1;
         _context.NoShows.Update(noShow);
+
+              if(noShow.count>=3){
+            BannedCustomer bannedCustomer = new BannedCustomer();
+        
+            bannedCustomer.BanDate = DateTime.UtcNow;
+            bannedCustomer.CustomerName = reservation.CustomerName;
+            bannedCustomer.ContactNumber = reservation.ContactNumber;
+            bannedCustomer.Reason = "Automatically banned for not showing up for 3 times.";
+
+            _context.BannedCustomers.Add(bannedCustomer);
+
+            await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "banned",
+    languageCode: "en",
+    parameters: []
+);
+}
     }
     else
     {
@@ -149,9 +172,17 @@ await _whatsAppService.SendTemplateMessageAsync(
     }
 }
     reservation.Status = update.Status;
+     _context.Entry(reservation).State = EntityState.Modified;
     await _context.SaveChangesAsync();
 
     return NoContent();
+
+  }  catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+    return BadRequest(new { message = "Error updating reservation", error = ex.Message });
+}
+
 }
 
 public class CancelRequest

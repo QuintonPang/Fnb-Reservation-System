@@ -16,10 +16,10 @@ import dayjs from "dayjs";
 
 const ReservationForm = () => {
 
-    
+
   const toast = useToast();
-  
-  
+
+
   const [formData, setFormData] = useState({
     customerName: "",
     contactNumber: "",
@@ -74,7 +74,7 @@ const ReservationForm = () => {
       reservationDateTime,
       numberOfGuests: Number(formData.numberOfGuests),
       status: "Pending",
-      outletId: Number(formData.outletId),
+      outletId: (formData.outletId),
     };
 
     try {
@@ -110,8 +110,8 @@ const ReservationForm = () => {
 
   return (
     <Box maxW="md" mx="auto" mt={10} p={6} borderWidth={1} borderRadius="lg">
-                <Text mb={4} fontSize={'5xl'} textAlign={'center'} fontWeight={600}> Table Reservation</Text>
-        
+      <Text mb={4} fontSize={'5xl'} textAlign={'center'} fontWeight={600}> Table Reservation</Text>
+
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           <FormControl isRequired>
@@ -147,7 +147,20 @@ const ReservationForm = () => {
             </NumberInput>
           </FormControl>
 
-    
+
+          <FormControl isRequired>
+            <FormLabel>Outlet</FormLabel>
+            <Select name="outletId" value={formData.outletId}  onChange={(e ) => setFormData({ ...formData, outletId: e.target.value })}>
+              <option value="">Select Outlet</option>
+              {outlets.map((outlet) => (
+                <option key={outlet.id} value={outlet.id}>
+                  {outlet.name} - {outlet.location}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+
 
           <Button type="submit" colorScheme="blue">
             Submit Reservation

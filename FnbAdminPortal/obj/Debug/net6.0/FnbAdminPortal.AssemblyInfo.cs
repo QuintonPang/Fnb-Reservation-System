@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FnbAdminPortal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ff7d8383ab94e4b0f4f05ef2df165f8e293fd14f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9b8e1ff47ba9060ce3276433931d1515c27a617f")]
 [assembly: System.Reflection.AssemblyProductAttribute("FnbAdminPortal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FnbAdminPortal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
