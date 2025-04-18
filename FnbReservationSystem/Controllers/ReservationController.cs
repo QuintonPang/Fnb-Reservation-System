@@ -54,8 +54,51 @@ namespace FnbReservationSystem.Controllers
         [HttpPost]
         public async Task<ActionResult<Reservation>> CreateReservation(Reservation reservation)
         {
+
             reservation.Status = "Pending"; // default
             _context.Reservations.Add(reservation);
+
+
+            
+    // 🔍 Get all suitable tables (same outlet, not seated, order by smallest first)
+    var availableTables = await _context.Tables
+        .Where(t => t.outletId == reservation.outletId)
+        .OrderBy(t => t.max)
+        .ToListAsync();
+
+    var selectedTables = new List<Table>();
+    int totalSeats = 0;
+
+    foreach (var table in availableTables)
+    {
+        if (totalSeats < reservation.NumberOfGuests)
+        {
+            selectedTables.Add(table);
+            totalSeats += table.max;
+        }
+
+        if (totalSeats >= reservation.NumberOfGuests)
+            break;
+    }
+
+    if (totalSeats < reservation.NumberOfGuests)
+    {
+        return BadRequest("Not enough tables available to accommodate the group.");
+    }
+
+    await _context.SaveChangesAsync();
+
+    // 🔗 Insert into QueueTables (many-to-many)
+    foreach (var table in selectedTables)
+    {
+        var queueTable = new QueueTable
+        {
+            queueId = reservation.Id,
+            tableId = table.Id,
+            type = "R"
+        };
+        _context.QueueTables.Add(queueTable);
+    }
             await _context.SaveChangesAsync();
 
 

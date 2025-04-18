@@ -88,9 +88,9 @@ const ReservationForm = () => {
 
       if (res.ok) {
         toast({
-          title: "Reservation added.",
+          title: "Reservation added. ID is "  + (await res.json()).id,
           status: "success",
-          duration: 3000,
+          duration: 7000,
           isClosable: true,
         });
         // Optionally reset form

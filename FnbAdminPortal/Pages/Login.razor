@@ -8,8 +8,8 @@
 <MudPaper Class="pa-4" Elevation="4">
     <MudText Typo="Typo.h5" GutterBottom="true">Login</MudText>
     
-    <MudTextField Label="Username" @bind-Value="username" />
-    <MudTextField Label="Password" @bind-Value="password" InputType="InputType.Password" />
+    <MudTextField Label="Username (First Name in lowercase if you are staff)" @bind-Value="username" />
+    <MudTextField Label="Password (Last 4 digits of IC if you are staff)" @bind-Value="password" InputType="InputType.Password" />
     
     <MudButton OnClick="OnLoginClicked">Login</MudButton>
     

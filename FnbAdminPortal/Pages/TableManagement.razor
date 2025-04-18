@@ -11,12 +11,15 @@
             <MudTh>Id</MudTh>
             <MudTh>Min</MudTh>
             <MudTh>Max</MudTh>
+            <MudTh>Outlet ID</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Id</MudTd>
             <MudTd>@context.min</MudTd>
             <MudTd>@context.max</MudTd>
+                        <MudTd>@context.outletId</MudTd>
+
             <MudTd>
                 <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteTable(context.Id)">
                     Delete

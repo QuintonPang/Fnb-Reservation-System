@@ -17,6 +17,11 @@
             <MudTd>@context.Name</MudTd>
             <MudTd>@context.Location</MudTd>
             <MudTd>@context.Capacity</MudTd>
+              <MudTd>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteOutlet(context.Id)">
+                    Delete
+                </MudButton>
+            </MudTd>
         </RowTemplate>
     </MudTable>
 </MudPaper>
@@ -29,6 +34,16 @@
         _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
     }
 
+      private async Task DeleteOutlet(int id)
+    {
+        var response = await Http.DeleteAsync($"http://localhost:5274/api/Outlet/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+        _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+        }
+    }
+
+
     async Task OpenAddDialog()
     {
         var dialog = DialogService.Show<AddOutletDialog>("Add Outlet");
@@ -36,12 +51,14 @@
 
         if (!result.Cancelled)
         {
-            var newOutlet = (Outlet)result.Data;
+        /*    var newOutlet = (Outlet)result.Data;
             var response = await Http.PostAsJsonAsync("http://localhost:5274/api/Outlet", newOutlet);
             if (response.IsSuccessStatusCode)
             {
                 _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
-            }
+            }*/
+                            _outlets = await Http.GetFromJsonAsync<List<Outlet>>("http://localhost:5274/api/Outlet");
+
         }
     }
 

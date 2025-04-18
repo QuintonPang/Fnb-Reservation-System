@@ -88,6 +88,36 @@ public async Task<ActionResult<IEnumerable<QueueWithTablesDto>>> GetAllQueue([Fr
         return BadRequest("Not enough tables available to accommodate the group.");
     }
 
+
+var firstInQueue = await _context.Queues
+    .Where(q => !q.IsSeated&& q.outletId == queue.outletId && !q.NoShow)
+    .OrderBy(q => q.Id )
+    .FirstOrDefaultAsync();
+
+    
+
+    if (firstInQueue == null)
+{
+
+      var outlet2 = await _context.Outlets
+            .Where(o => o.Id == queue.outletId)  
+            .FirstOrDefaultAsync();
+
+    var parameters2 = new List<WhatsAppService.TemplateParameter>
+{
+    new() { type = "text", text = queue.CustomerName, parameter_name = "customer_name" },
+    new() { type = "text", text = outlet2.Name, parameter_name = "outlet_name" },
+};
+
+await _whatsAppService.SendTemplateMessageAsync(
+    toPhoneNumber: "60193903300",
+    templateName: "your_turn_has_arrived",
+    languageCode: "en",
+    parameters: parameters2
+);
+}
+
+
     // Save the queue
     _context.Queues.Add(queue);
     await _context.SaveChangesAsync();
@@ -134,6 +164,8 @@ await _whatsAppService.SendTemplateMessageAsync(
     languageCode: "en",
     parameters: parameters
 );
+
+
 
 
 // Instead of _webSocketManager.BroadcastQueueUpdate, use the class name directly
